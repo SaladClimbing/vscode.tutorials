@@ -1,0 +1,112 @@
+# VS Code Tutorials
+
+Package website: <https://ppbds.github.io/vscode.tutorials/>
+
+## About this package
+
+**vscode.tutorials** is a collection of tutorials for working with VS
+Code. Covers scripts, Quarto documents, git, Github, and Quarto
+websites. Tutorials are built with the
+**[learnr2](https://ppbds.github.io/learnr2/)** package and run in the
+browser via Quarto and WebR.
+
+## Installation
+
+Install the development version from [GitHub](https://github.com/) with:
+
+``` r
+
+pak::pak("PPBDS/vscode.tutorials")
+```
+
+## Tutorials
+
+There are many tutorials in the package. The recommended way to launch
+them is with the [R Tutorials extension for VS
+Code](https://open-vsx.org/extension/PPBDS/vscode-r-tutorials), which
+lists every installed tutorial and lets you start one with a click.
+
+As a backup, you can launch a tutorial from the R console with
+[`learnr2::run_tutorial()`](https://ppbds.github.io/learnr2/reference/run_tutorial.html),
+providing the short name of the tutorial and the package name.
+
+``` R
+learnr2::run_tutorial(name = "workflow",
+                      package = "vscode.tutorials")
+```
+
+### VS Code Tutorials
+
+The core tutorials introduce students to the VS Code integrated
+development environment.
+
+- *Orientation* (“orientation”). A tour of the workspace: the bash
+  Terminal, the R Terminal, GitHub Copilot, and the ways to run R code.
+
+- *Workflow* (“workflow”). The first tutorial after **Orientation**:
+  move around VS Code, use the Terminal, create a GitHub repo, run R
+  scripts, make plots, and commit and push with Git.
+
+- *Code* (“code”). Introduce students to VS Code and to writing R code
+  in simple scripts.
+
+- *Quarto* (“quarto”). Demonstrate more tricks for working with R code
+  using VS Code, and also explain Quarto documents.
+
+- *Antigravity* (“antigravity”). Meet the Antigravity CLI agent (`agy`)
+  and use it to create and render a Quarto analysis.
+
+- *Terminal 1* (“terminal-1”). First of three bash Terminal tutorials:
+  the core commands, paths, and output redirection.
+
+- *Terminal 2* (“terminal-2”). Command options, environment variables,
+  looking inside files, moving files in and out of a Codespace, and
+  running R and Python programs.
+
+- *Terminal 3* (“terminal-3”). Wildcards, regular expressions, grep, and
+  pipes.
+
+- *GitHub Introduction* (“github-1”). Explain the basics of Git and
+  GitHub, mostly in the context of VS Code.
+
+- *GitHub Advanced* (“github-2”). More practice with Git/GitHub: create
+  a repo by hand with `gh`, clone it onto a fresh machine, pull changes
+  back, and delete a Codespace while your work survives on GitHub.
+
+- *Websites 1* (“websites-1”). Use the quarto CLI to create, render,
+  preview, and publish a multi-page website to GitHub Pages.
+
+- *Websites 2* (“websites-2”). Build a site with multi-page navigation
+  and drop-down menus, then refactor analysis code into scripts that
+  save results as RDS and PNG files.
+
+- *Devcontainers* (“devcontainers”). Introduce devcontainers, touring a
+  pre-built Jupyter devcontainer.json and building an R
+  devcontainer.json from scratch.
+
+- *Our Codespace Starter* (“our-codespace-starter”). Tour the
+  devcontainer.json behind `codespace-starter` itself.
+
+- *The Devcontainer Dockerfile* (“docker”). Read through the Dockerfile
+  that builds the PPBDS devcontainer image.
+
+- *Your Starter* (“your-starter”). Build your own version of
+  `codespace-starter`, with your own Dockerfile, image, and
+  devcontainer.json. Under construction.
+
+- *Dotfiles* (“dotfiles”). Build a private `dotfiles` repo that GitHub
+  reads every time it makes you a machine, so a brand new Codespace
+  already knows your Git identity.
+
+- *OpenRouter* (“openrouter”). Get an OpenRouter account and API key,
+  store the key so it survives a rebuild, and use it to drive `aider` on
+  free and cheap models.
+
+- *Models And Money* (“models”). Buy \$10 of OpenRouter credits — the
+  only credit card in the course — call the API from bash and from R
+  with `ellmer`, and find out what the hundred-fold price gap between
+  free and frontier models actually buys.
+
+The *R for Data Science* and *Analyzing US Census Data* tutorials now
+live in the separate
+**[misc.tutorials](https://github.com/PPBDS/misc.tutorials)** package.

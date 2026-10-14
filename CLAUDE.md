@@ -1,0 +1,465 @@
+# CLAUDE.md — vscode.tutorials
+
+`vscode.tutorials` is the **infrastructure / mechanics** tutorial
+package: the first tutorials a student does, which teach the *tools and
+environment* — Git, GitHub, `.gitignore`, `_files` directories,
+terminals, GitHub Codespaces, Quarto rendering, the distinction between
+QMD World and R World, package ecosystems, CP/CR, and the rest of the
+working setup.
+
+## Relationship to the base tutorial guide
+
+The base guide
+([`claude-md/tutorials/CLAUDE.md`](https://github.com/PPBDS/ai-rules/blob/main/claude-md/tutorials/CLAUDE.md))
+is the default contract for tutorials across the project, and
+**`vscode.tutorials` mostly *follows* it.** Its rules for question
+types, knowledge drops, the Introduction/Summary structure, submission
+evidence (CP/CR, `show_file()`), and the syntactic conventions all apply
+here. Read the base guide first; it is the default, not an outside
+reference. Two things set this package apart:
+
+1.  **No build-two-graphics-and-publish arc.** The one structural piece
+    of a normal tutorial these lack is its analysis path — get data,
+    explore it, build a plot or table, interpret, publish. A
+    `vscode.tutorials` tutorial’s *topic* is a piece of the working
+    setup (Git, terminals, Codespaces, devcontainers, rendering), not a
+    data analysis, so there is no `analysis.qmd` working chunk and no
+    published graphic. Everything else about how an exercise and a
+    tutorial are shaped still comes from the base guide.
+
+2.  **A narrow, shrinking mechanics exception — first few tutorials
+    only.** The genuinely from-scratch teaching, where the base guide’s
+    *assumptions* (students already know Git, terminals, rendering,
+    CP/CR) are exactly what we *teach*, lives in the earliest tutorials.
+    There the base guide’s bans (no exercise code chunks, no generic
+    knowledge drops, work-in-the-QMD-not-the-R-Terminal) do not bind: we
+    teach the mechanics directly, run commands in the Terminal because
+    the Terminal is the lesson, and use the generic infrastructure
+    knowledge drops collected below. This is **not** a blanket property
+    of the package: the exception covers exactly the first four
+    tutorials — Orientation, Workflow, Code, and Quarto — and **ends
+    with Quarto**. Do not invoke it for any later tutorial just because
+    the file happens to live in this package. (It may yet be removed
+    entirely.)
+
+### Tutorial format: learnr2
+
+Every tutorial is a **learnr2** Quarto document,
+`inst/tutorials/<slug>/<slug>.qmd`, rendered to a static page. The
+mechanics — YAML, labels, `echo: false` on widget chunks, question
+types, screenshot questions, `{verbatim}` blocks — are in learnr2’s
+vignettes “Translating learnr Tutorials” and “Tutorials in the Age of
+AI”; follow them. Two house choices on top of those: each question’s
+prompt stays in the prose above its chunk, with a plain-text copy in
+`text` and `show_text = FALSE`, and the boilerplate sits under
+`## Information` (`information-1`) and `## Download answers`
+(`download-answers-1`, `download-answers-2`). Check with
+[`learnr2::check_tutorial()`](https://ppbds.github.io/learnr2/reference/check_tutorial.html)
+and
+[`learnr2::render_tutorials()`](https://ppbds.github.io/learnr2/reference/render_tutorials.html).
+The version before the move to learnr2 is the git tag
+`last-learnr-version`.
+
+**Never mention learnr or tutorial.helpers** — in tutorial prose,
+examples, README, or package docs. Students know only learnr2:
+`show_file()` comes from **learnr2**, and a translated passage that
+named either old package is rewritten around learnr2 or dropped. The one
+exception is the Devcontainer Dockerfile tutorial’s embedded copy of the
+PPBDS Dockerfile, which must match the real file line for line.
+
+### What downstream packages assume
+
+Later packages (`misc.tutorials`, the Primer) do **not** assume a
+student has done *all* of `vscode.tutorials` — only the foundational
+material **through the Quarto tutorial**, the same boundary as the
+mechanics exception above. Nothing after Quarto is part of that assumed
+base. (This is about what downstream tutorials may rely on, not a claim
+about which tutorials students finish — many do reach the later ones.)
+
+The Quarto tutorial’s Publishing section is what completes this
+boundary: it teaches `.gitignore` and `quarto publish gh-pages`, the
+last two skills the base guide’s standard Introduction/Summary sequences
+lean on. Antigravity and GitHub Introduction teach them again later;
+that repetition is deliberate reinforcement.
+
+The dependency runs both ways. The standard class workflow sends
+students from these four tutorials directly into `misc.tutorials`’
+`r4ds-1`–`r4ds-5`, so the first four must supply **every** piece of
+background that sequence relies on. When a downstream tutorial needs a
+skill not taught through Quarto, the fix lands here (or the downstream
+tutorial scaffolds it explicitly) — it is never assumed silently.
+Cutting material from Orientation, Workflow, Code, or Quarto therefore
+requires checking what downstream leans on it.
+
+### The universal entry point
+
+Outside any single tutorial, students learn one fixed way to begin, the
+same for every tutorial in every package:
+
+1.  **Open a Codespace on `main` from `PPBDS/codespace-starter`** (or,
+    on a local machine, open VS Code there). Work always starts here.
+2.  **Start the tutorial from the R Tutorials extension.** (When a
+    tutorial lives in another package — e.g. `primer.tutorials` —
+    installing that package is also taught outside the tutorial
+    context.)
+
+That is the entire entry ritual a student must carry in their head.
+Crucially, because every student is *already in a `codespace-starter`
+Codespace* when a tutorial begins, **a tutorial does not require the
+student to have set up a work repo beforehand.** The intro itself walks
+them through creating and connecting one — `connect-repo`,
+`File → Open Folder`, and the rest. There is no “be in repo `whatever`
+before you start, or exit and restart”: setting up the repo is the first
+thing the tutorial does.
+
+How much the intro spells out scales with where the tutorial sits:
+
+- **Early `vscode.tutorials`:** walk it through slowly — run
+  `connect-repo`, explain what it does, show the two folders that now
+  sit side by side under `/workspaces`, and so on. This is teaching
+  content, not boilerplate, and naming `codespace-starter` /
+  `connect-repo` here is correct because the environment is the subject.
+- **Later tutorials (and downstream packages):** just use the standard
+  repo line: *“You should be doing this tutorial in a repo named
+  `whatever`. If you are not, create one and then connect to it. You may
+  need to restart this tutorial after you do so.”* The mechanics were
+  taught earlier, so this wording carries the whole setup — it correctly
+  covers the student who already connected before launching the
+  tutorial, and the restart warning covers the VS Code window reload
+  that `connect-repo` can trigger. Downstream normal tutorials keep this
+  environment-agnostic per the base guide — the student executes “create
+  one and then connect to it” the same way regardless of where they are.
+
+### Running locally
+
+All `vscode.tutorials` are written for a **GitHub Codespace using VS
+Code** — that is the assumed environment. The tutorials *can* be run on
+a local machine, and with a reasonable setup 90%+ of the steps work
+identically, but some things differ. The directory structure is not the
+same, and conveniences that ship with `codespace-starter` do not exist
+locally: a tool like `connect-repo` only exists when you begin from
+`codespace-starter`. A local student instead creates a repo by hand (or
+asks AI for the `git` commands) and clones it to their machine.
+
+We do **not** teach these local-vs-Codespace differences — the tutorials
+are written for the Codespace path — but we do **mention** them on
+occasion, so a local student isn’t left stranded. **TODO: revisit which
+tutorials should carry these mentions, and where.** Right now they
+appear ad hoc; they deserve deliberate placement.
+
+## Generic knowledge drops to integrate
+
+As the normal tutorials (the Primer; `misc.tutorials`) adopted the base
+guide’s knowledge-drop rule — every drop must (1) make a key point from
+the companion chapter, (2) talk about the data, or (3) comment on what
+the most recent command displayed — a set of **generic infrastructure
+knowledge drops** were pulled out of them. Those lessons are real and
+worth teaching; they just belong *here*, in the infrastructure
+tutorials, not in a data science tutorial.
+
+They are recorded below so nothing is lost. **TODO: do a better job of
+including these within `vscode.tutorials`** — as progressive, spaced
+lessons woven into the relevant exercises, rather than the canned
+one-liners and template ladders they started as.
+
+### Working in the cloud
+
+> Professionals keep their data science work in the cloud because
+> laptops fail.
+
+### Spaced repetition
+
+> The best way to ensure that students remember these concepts more than
+> a few months after the course ends is spaced repetition, although we
+> focus more on the repetition than on the spacing.
+
+### QMD World vs R World
+
+The render runs in its own R session; the R Terminal is a different
+session; a library or object set up in one is not present in the other.
+A ladder of increasing sophistication (salvaged from the retired Primer
+§12.6 Theme 1):
+
+1.  The two worlds exist. Rendering runs in its own R session; the R
+    Terminal is a different session. A library or object you set up in
+    one is not present in the other.
+2.  Rendering runs in a *fresh* session — packages loaded in the R
+    Terminal are invisible to the render, which is why every library the
+    document needs must be in the QMD’s setup chunk.
+3.  Several R sessions can run simultaneously (R Terminal, render, AI
+    agent), each with its own workspace.
+4.  The isolation is usually a feature: renders start from a known-clean
+    state, so results don’t depend on whatever is loaded in an
+    interactive session.
+5.  The rare failure mode is when the sessions *do* share state —
+    writing to the same file, reading a cache another process is
+    updating — and those are almost always bugs.
+6.  In modern workflows neither is a single instance: many R sessions
+    run in parallel (shared Codespaces, `Rscript` jobs, AI agents
+    spawning their own sessions). Parallelism is the norm;
+    non-interaction is what makes it work; when they do interact, expect
+    trouble.
+
+### `library(tidyverse)` and package ecosystems
+
+A ladder from “what the tidyverse is” through “why conflicts matter” to
+“what a namespace is” (salvaged from the retired Primer §12.6 Theme 2):
+
+1.  The tidyverse is a family of packages that share a common design
+    philosophy and grammar — **dplyr** for manipulation, **ggplot2** for
+    plotting, **readr** for I/O, and several others.
+    [`library(tidyverse)`](https://tidyverse.tidyverse.org) loads the
+    core set at once.
+2.  The attach message ends with a “Conflicts” section naming functions
+    that exist in more than one package —
+    [`dplyr::filter()`](https://dplyr.tidyverse.org/reference/filter.html)
+    masks [`stats::filter()`](https://rdrr.io/r/stats/filter.html). The
+    last-loaded package wins, so after
+    [`library(tidyverse)`](https://tidyverse.tidyverse.org) the
+    [`filter()`](https://rdrr.io/r/stats/filter.html) you get is
+    dplyr’s.
+3.  Why masking matters:
+    [`filter()`](https://rdrr.io/r/stats/filter.html) from dplyr behaves
+    very differently from
+    [`filter()`](https://rdrr.io/r/stats/filter.html) in base R. The
+    masking is deliberate — the tidyverse is saying “our version is what
+    you want.”
+4.  **Namespaces**: every function in R lives in a package’s namespace.
+    [`dplyr::filter`](https://dplyr.tidyverse.org/reference/filter.html)
+    names the function explicitly and avoids masking entirely. In
+    reusable code (packages, sourced scripts), reach for the namespace
+    prefix rather than relying on load order.
+
+## Authoring conventions
+
+The project-wide *syntactic* conventions apply here exactly as in the
+base guide and every other tutorial package. In particular:
+
+- **Per-chunk options use Quarto’s `#| key: value` syntax on lines
+  inside the chunk, not inline `, key = value` on the header.** So an
+  answer chunk is
+
+      ```{r}
+      #| label: section-name-N-answer
+      #| echo: true
+      # our code
+
+  \`\`\`
+
+  not `{r section-name-N-answer, echo = TRUE}`. The label, too, goes on
+  a `#| label:` line, and nothing stays inline on the header. This is
+  the canonical style across every tutorial package in the project (the
+  Primer, `misc.tutorials`, and this one). Use it for `label`, `echo`,
+  `message`, `warning`, `cache`, `eval`, and every other chunk option.
+
+### Terminal terminology
+
+VS Code’s own terminal vocabulary is confusing, so the tutorials use one
+fixed system, taught in Getting Started, Orientation, and Terminal 1 and
+applied everywhere (including the primer’s Getting Started chapter):
+
+- **Panel** — the bottom region of the VS Code window, holding several
+  *views* (Problems, Output, Terminal, Ports). Never call the region
+  “the Terminal” or “the Terminal panel.”
+- **the Terminal** (bare, capital T) — the Terminal *view* in the Panel,
+  and only that. Not “Terminal pane,” “Terminal panel,” or (for the
+  view) “Terminal tab.”
+- **terminal** (lowercase) — the generic noun: one interactive session
+  inside the Terminal view, or the concept in general (“a terminal-based
+  assistant”). Each terminal is selected by its **tab** on the right
+  side of the Panel; “tab” refers to those instance tabs only, never to
+  the Panel’s view labels.
+- **bash Terminal** / **R Terminal** — a terminal running the bash shell
+  / running R. **Instructions must always name which one** — “In the
+  bash Terminal, run `ls`” — never bare “From the Terminal, run …”.
+  (Typing bash commands into the R Terminal is the classic student error
+  this prevents.)
+- Bold verbatim UI strings (**TERMINAL**, **bash**, **R Terminal**, **R
+  Interactive**) only when pointing the student at something on screen.
+  Wrinkle worth a parenthetical where it bites: the drop-down item is
+  labeled “R Terminal” but the resulting terminal’s tab is “R
+  Interactive.”
+- The conceptual key, taught in Terminal 1: a terminal is a window for
+  typing text to a program; the program is usually the bash **shell**;
+  an R Terminal is the same kind of window running R. Use “shell” (not
+  “Terminal”) for shell-owned things: the environment, `PATH` lookup,
+  command history.
+
+## Consistency rules: prompts, repo names, and tutorial titles
+
+These rules keep every example transcript in every tutorial consistent
+with what a student actually sees. They interlock: **changing a
+tutorial’s title fans out into many required edits**, listed below. Do
+not change one piece without the others.
+
+### The bash prompt in example answers
+
+`codespace-starter`’s `welcome.sh` sets `PS1='\W \$ '`, so in any
+Codespace started from `codespace-starter` the bash prompt is **the
+basename of the current working directory, a space, and a dollar sign**:
+
+    codespace-starter $ cd example
+    example $
+
+- Every example transcript must use this style — never GitHub’s stock
+  long prompt (`@user ➜ /workspaces/dir (main) $`), never a bare `$`.
+- The prompt tracks `cd`: after `cd example` the prompt is `example $`;
+  after `cd ..` it reverts to the parent’s name.
+- In the **home directory** bash’s `\W` renders `~`, so the prompt is
+  `~ $`. The home directory is `/home/rstudio` (the image’s user is
+  `rstudio`) — not `/home/codespace`.
+- **Exception — Codespaces not started from our image.** The Jupyter and
+  Blank template Codespaces (toured in the Devcontainers tutorial) show
+  GitHub’s stock long prompt. Those transcripts are correct as-is; leave
+  them.
+- **Every terminal gets the short prompt, including the first one.**
+  Since October 2026 `setup.sh` runs from `onCreateCommand` (prebuild
+  time), so the `PS1` override is already at the end of `~/.bashrc`
+  before the Codespace’s first terminal opens. The old subtlety (“only a
+  newly opened bash Terminal gets the short prompt”) is retired;
+  tutorials must not teach it or show the long prompt as something a
+  student might see in a `codespace-starter` Codespace. What the first
+  terminal *does* carry is a small ⚠ “extensions want to relaunch the
+  terminal” icon on its tab (as does any terminal created before the R
+  extension activates); it is harmless, and Orientation says so once.
+
+### Repo names derive from tutorial titles
+
+**Every tutorial, starting with Workflow, requires its own work repo**,
+named after the **tutorial’s title**: lowercase, with spaces and other
+non-alphanumeric characters replaced by dashes. “Terminal 1” →
+`terminal-1`; “Our Codespace Starter” → `our-codespace-starter`. The
+reason is ownership: students cannot push to `codespace-starter` (it is
+not their repo), nor publish GitHub Pages from it. Some tutorials (the
+terminal trio) never push at all, but the uniform one-tutorial-one-repo
+rule beats tracking special cases. There are no repo-less tutorials: a
+transcript’s prompt shows the repo name (`terminal-1 $`) whenever the
+working directory is the repo root, and `codespace-starter $` appears
+only when a transcript genuinely has the student located in that folder.
+
+`connect-repo` is a command on the `PATH` (`codespace-starter`’s
+`setup.sh` installs it in `~/.local/bin`) and works from any directory.
+The canonical fix-it instruction is the single command
+`connect-repo <name>`. **Always call it `connect-repo`** — never
+`connect-repo.sh` or `.devcontainer/connect-repo.sh`, and never with a
+preceding `cd /workspaces/codespace-starter`. The only exception is real
+output that lists the file itself, such as `ls .devcontainer` showing
+`connect-repo.sh`.
+
+Consequently, **when a tutorial’s title changes, update all of these**
+(they all embed the repo name):
+
+1.  The “Create and connect to a repo called `<name>`” instruction (and
+    any other prose naming the repo).
+2.  Every prompt line in every example transcript (`<name> $`).
+3.  Every path (`/workspaces/<name>`,
+    `Creating project at /workspaces/<name>:`).
+4.  Every URL: `https://github.com/<user>/<name>`,
+    `https://codespaces.new/...`, GitHub Pages
+    (`https://<user>.github.io/<name>/`), git remote lines in
+    `git log`/push output.
+5.  Rows copied from the github.com/codespaces list (they show repo
+    names).
+
+Do **not** change: the tutorial’s directory name under `inst/tutorials/`
+(it also names the `.qmd` and the page URL that saved answers are keyed
+on, and a title change does not touch it), or chunk labels (a question’s
+label is the key its saved answer is stored under).
+
+- A title must not collide with a directory that already exists under
+  `/workspaces` — in particular, a title that would map to
+  `codespace-starter` is forbidden (that folder is always present).
+- There are currently no exceptions to one-title-one-repo: every
+  tutorial uses exactly one repo, named from its title. The Dotfiles
+  tutorial stretches the pattern without breaking it: its repo is still
+  named from its title (`dotfiles`), but it is **private**, created with
+  `gh repo create dotfiles --private --clone` rather than
+  `connect-repo`, never opened as the workspace, and — unlike every
+  other tutorial repo — permanent: students keep it, and the OpenRouter
+  tutorial builds on it.
+
+### Refer to tutorials by title, not slug
+
+In prose — this file, and cross-references inside tutorials — refer to a
+tutorial by its **title** (“the Quarto tutorial”, “GitHub
+Introduction”), never by its directory slug. Reserve the slug for places
+that genuinely need it: paths, URLs, and `run_tutorial()` calls.
+
+When a title is written out as a title, quote it: *the next tutorial,
+“Models And Money,” teaches…*; *the “Orientation” tutorial*. Following
+American style, commas and periods go inside the closing quote. Short
+attributive references (the Quarto tutorial, the Code tutorial) stay
+unquoted.
+
+### Tutorial order and directory names
+
+A tutorial’s place in the sequence is set by `ordering` in its YAML
+header:
+
+``` yaml
+learnr2:
+  ordering: 5
+```
+
+The R Tutorials extension lists tutorials by `ordering`, lowest first
+(tutorials without one sort after, by folder name). Current order:
+Orientation (1), Workflow, Code, Quarto, Antigravity, Terminal 1–3,
+GitHub Introduction, GitHub Advanced, Websites 1–2, Devcontainers, Our
+Codespace Starter, The Devcontainer Dockerfile, Your Starter, Dotfiles,
+OpenRouter, Models And Money (19). **Every tutorial must set an
+`ordering`.** Reordering means editing these numbers and nothing else.
+
+Because `ordering` controls the sequence, directory names carry **no
+numeric prefix** (they were `01-orientation` … `19-models` until October
+2026). A directory is `inst/tutorials/<slug>/`, and the `.qmd` inside it
+and the `filename_prefix` of
+[`learnr2::download_answers_button()`](https://ppbds.github.io/learnr2/reference/download_answers_button.html)
+must both equal the slug (`<slug>/<slug>.qmd`). Renaming a slug fans
+out; update all of these together:
+
+1.  `learnr2::run_tutorial(name = "<slug>", ...)` calls, in
+    README.Rmd/README.md and the package help page
+    (`R/vscode.tutorials-package.R`).
+2.  The `.qmd` file name and the `filename_prefix`. (The rename changes
+    the page URL that students’ saved answers are keyed on, so those
+    answers do not carry over.)
+3.  Paths in this file, `.github/scripts/check-config-drift.R`, and
+    `tests/testthat/test-downloads.R`.
+4.  Files students download from GitHub (the
+    `raw.githubusercontent.com/...` URLs in download exercises and in
+    `tests/testthat/test-downloads.R`) must **not** live under a
+    tutorial directory. Keep them in `inst/extdata/` (`grepping.txt`) or
+    at the repo root (`TODO.txt`), so a rename never changes the URL. A
+    URL that embeds `inst/tutorials/<slug>/` breaks in both directions:
+    it 404s until the rename is pushed, and once pushed it 404s for
+    every student still on the previously installed package (how the
+    Terminal 3 `grepping.txt` link broke in September 2026).
+
+NEWS.md entries are historical records — never rewrite old names in
+them.
+
+### The devcontainer image pin (`ghcr.io/ppbds/devcontainer:X.Y.Z`)
+
+The version tag students see when they read `codespace-starter`’s
+`devcontainer.json` changes regularly. The authoritative value is the
+`"image"` pin in [PPBDS/codespace-starter
+`.devcontainer/devcontainer.json`](https://github.com/PPBDS/codespace-starter/blob/main/.devcontainer/devcontainer.json).
+**Whenever that pin is bumped, update every versioned copy in this
+repo** (find them with
+`grep -rn 'ghcr.io/ppbds/devcontainer:' --include='*.qmd' --include='*.yaml' .`):
+
+1.  The Our Codespace Starter tutorial (currently
+    `inst/tutorials/our-codespace-starter/our-codespace-starter.qmd`) —
+    the expected answer for the find-the-`"image"`-line exercise.
+2.  The Devcontainer Dockerfile tutorial (currently
+    `inst/tutorials/docker/docker.qmd`) — the intro’s back-reference to
+    that line.
+3.  `.github/workflows/R-CMD-check.yaml` — the CI `container: image:`
+    tag (this one is normally bumped as part of the codespace-starter
+    release process; the tutorials are what get forgotten).
+
+Unversioned mentions of `ghcr.io/ppbds/devcontainer` (no `:X.Y.Z`) are
+fine and need no touching. Separately, The Devcontainer Dockerfile
+tutorial embeds a full copy of the `PPBDS/devcontainers` Dockerfile —
+when that Dockerfile changes materially, the embedded copy (and the
+exercises reading it) must be refreshed too.
